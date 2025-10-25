@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Колесо фортуны 🎡</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body { background: #222; color: white; text-align: center; font-family: sans-serif; margin-top: 40px; }
+    #wheel { width: 300px; height: 300px; border-radius: 50%; border: 10px solid gold; margin: 20px auto;
+      background: conic-gradient(#f00 0deg 60deg, #0f0 60deg 120deg, #00f 120deg 180deg, #ff0 180deg 240deg, #0ff 240deg 300deg, #f0f 300deg 360deg);
+      transition: transform 4s ease-out; }
+    #pointer { width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent;
+      border-bottom: 30px solid red; margin: auto; }
+    button { padding: 10px 20px; font-size: 18px; background: gold; border: none; border-radius: 10px; cursor: pointer; color: black; }
+  </style>
+</head>
+<body>
+  <h1>🎡 Колесо фортуны</h1>
+  <div id="pointer"></div>
+  <div id="wheel"></div>
+  <button onclick="spin()">Крутить!</button>
+  <h2 id="result"></h2>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    function spin() {
+      const wheel = document.getElementById("wheel");
+      const result = document.getElementById("result");
+
+      const randomDegree = 500 + Math.floor(Math.random() * 1500);
+      wheel.style.transform = rotate(${randomDegree}deg);
+
+      fetch('/spin')
+        .then(res => res.text())
+        .then(text => {
+          setTimeout(() => { result.textContent = "Результат: " + text; }, 4000);
+        });
+    }
+  </script>
+</body>
+</html>
