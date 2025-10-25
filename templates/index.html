@@ -65,11 +65,11 @@ h1 { text-align: center; }
 .pointer {
     width: 0;
     height: 0;
-    border-left: 15px solid transparent;
-    border-right: 15px solid transparent;
-    border-bottom: 30px solid red;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-bottom: 25px solid red;
     position: absolute;
-    top: -30px;
+    top: -25px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 10;
@@ -102,7 +102,6 @@ button:hover { background: #e67e22; }
     position: fixed;
     width: 10px;
     height: 10px;
-    background-color: red;
     pointer-events: none;
     z-index: 1000;
     opacity: 0.8;
@@ -135,58 +134,59 @@ button:hover { background: #e67e22; }
 <button onclick="spinWheel()">Крутить!</button>
 <div id="result"></div>
 
-<!-- Звуковой сигнал -->
 <audio id="win-sound">
     <source src="https://www.soundjay.com/button/beep-07.wav" type="audio/wav">
 </audio>
 
 <script>
-const wheel = document.getElementById('wheel');
-const pointer = document.getElementById('pointer');
-const resultDiv = document.getElementById('result');
-const winSound = document.getElementById('win-sound');
-const prizes = ["Приз 1", "Приз 2", "Приз 3", "Приз 4", "Приз 5", "Приз 6", "Приз 7", "Приз 8"];
-let spinning = false;
+document.addEventListener("DOMContentLoaded", function() {
+    const wheel = document.getElementById('wheel');
+    const pointer = document.getElementById('pointer');
+    const resultDiv = document.getElementById('result');
+    const winSound = document.getElementById('win-sound');
+    const prizes = ["Приз 1","Приз 2","Приз 3","Приз 4","Приз 5","Приз 6","Приз 7","Приз 8"];
+    let spinning = false;
 
-function createConfetti() {
-    const confettiCount = 50;
-    for (let i = 0; i < confettiCount; i++) {
-        const confetti = document.createElement('div');
-        confetti.classList.add('confetti');
-        confetti.style.left = Math.random() * window.innerWidth + 'px';
-        confetti.style.backgroundColor = hsl(${Math.random()*360}, 100%, 50%);
-        confetti.style.animationDuration = 2 + Math.random()*3 + 's';
-document.body.appendChild(confetti);
-        setTimeout(() => { confetti.remove(); }, 5000);
+    function createConfetti() {
+        const confettiCount = 50;
+        for (let i=0; i<confettiCount; i++) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            confetti.style.left = Math.random() * window.innerWidth + 'px';
+            confetti.style.backgroundColor = hsl(${Math.random()*360}, 100%, 50%);
+            confetti.style.
+animationDuration = 2 + Math.random()*3 + 's';
+            document.body.appendChild(confetti);
+            setTimeout(()=>{ confetti.remove(); },5000);
+        }
     }
-}
 
-function spinWheel() {
-    if (spinning) return;
-    spinning = true;
-    resultDiv.textContent = "";
+    window.spinWheel = function() {
+        if(spinning) return;
+        spinning = true;
+        resultDiv.textContent = "";
 
-    const prizeIndex = Math.floor(Math.random() * prizes.length);
-    const degreesPerPrize = 360 / prizes.length;
-    const spins = 5;
-    const randomOffset = Math.random() * degreesPerPrize;
-    const totalDegrees = spins * 360 + prizeIndex * degreesPerPrize + randomOffset;
+        const prizeIndex = Math.floor(Math.random() * prizes.length);
+        const degreesPerPrize = 360 / prizes.length;
+        const spins = 5;
+        const randomOffset = Math.random() * degreesPerPrize;
+        const totalDegrees = spins*360 + prizeIndex*degreesPerPrize + randomOffset;
 
-    wheel.style.transform = rotate(${totalDegrees}deg);
+        wheel.style.transform = rotate(${totalDegrees}deg);
 
-    // Стрелка дергается для реализма
-    pointer.style.transform = translateX(-50%) rotate(15deg);
-    setTimeout(() => { pointer.style.transform = translateX(-50%) rotate(-10deg); }, 200);
-    setTimeout(() => { pointer.style.transform = translateX(-50%) rotate(0deg); }, 400);
+        // Лёгкое дергание стрелки
+        pointer.style.transform = translateX(-50%) rotate(15deg);
+        setTimeout(()=>{ pointer.style.transform = translateX(-50%) rotate(-10deg); },200);
+        setTimeout(()=>{ pointer.style.transform = translateX(-50%) rotate(0deg); },400);
 
-    // После остановки
-    setTimeout(() => {
-        resultDiv.textContent = 🎉 Поздравляем! Вы выиграли: ${prizes[prizeIndex]} 🎉;
-        winSound.play();
-        createConfetti();
-        spinning = false;
-    }, 5000);
-}
+        setTimeout(()=>{
+            resultDiv.textContent = 🎉 Поздравляем! Вы выиграли: ${prizes[prizeIndex]} 🎉;
+            winSound.play();
+            createConfetti();
+            spinning = false;
+        },5000);
+    }
+});
 </script>
 </body>
 </html>
