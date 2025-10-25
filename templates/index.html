@@ -5,195 +5,127 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Колесо фортуны 🎡</title>
 <style>
-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
-    background: #f0f0f0;
+body { font-family: Arial; display:flex; flex-direction:column; align-items:center; background:#f0f0f0; margin:0; padding:20px; }
+h1 { text-align:center; }
+#container {
+  position: relative;
+  width: 90vw;
+  max-width: 600px;
+  height: 120px;
+  overflow: hidden;
+  border: 2px solid #333;
+  border-radius: 10px;
+  background:#fff;
+  margin-top:20px;
 }
-
-h1 { text-align: center; }
-
-.wheel-container {
-    position: relative;
-    width: 90vw;
-    max-width: 400px;
-    aspect-ratio: 1/1;
-    margin-top: 20px;
+#strip {
+  display: flex;
+  position: absolute;
+  left:0;
+  top:0;
+  height:100%;
+  white-space: nowrap;
 }
-
-.wheel {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 8px solid #333;
-    position: relative;
-    overflow: hidden;
+.strip-item {
+  width:100px;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:40px;
+  border-right:1px solid #ccc;
 }
-
-.wheel div {
-    position: absolute;
-    width: 50%;
-    height: 50%;
-    top: 50%;
-    left: 50%;
-    transform-origin: 0% 0%;
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-end;
-    padding-right: 10px;
-    font-weight: bold;
-    color: white;
-    font-size: 1em;
-    border-right: 1px solid #fff;
-}
-
-/* Цветные сектора */
-.wheel div:nth-child(1) { background-color: #e74c3c; transform: rotate(0deg); }
-.wheel div:nth-child(2) { background-color: #3498db; transform: rotate(45deg); }
-.wheel div:nth-child(3) { background-color: #f1c40f; transform: rotate(90deg); color:#333; }
-.wheel div:nth-child(4) { background-color: #2ecc71; transform: rotate(135deg); }
-.wheel div:nth-child(5) { background-color: #9b59b6; transform: rotate(180deg); }
-.wheel div:nth-child(6) { background-color: #e67e22; transform: rotate(225deg); }
-.wheel div:nth-child(7) { background-color: #1abc9c; transform: rotate(270deg); }
-.wheel div:nth-child(8) { background-color: #c0392b; transform: rotate(315deg); }
-
 .pointer {
-    width: 0;
-    height: 0;
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-bottom: 25px solid red;
-    position: absolute;
-    top: -25px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10;
+  position:absolute;
+  top:-10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:0;
+  height:0;
+  border-left:20px solid transparent;
+  border-right:20px solid transparent;
+  border-bottom:30px solid red;
+  z-index:10;
 }
-
-button {
-    margin-top: 30px;
-    padding: 12px 25px;
-    font-size: 20px;
-    border: none;
-    border-radius: 8px;
-    background: #f39c12;
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-button:hover { background: #e67e22; }
-
-#result {
-    margin-top: 20px;
-    font-size: 20px;
-    font-weight: bold;
-    color: #2c3e50;
-    text-align: center;
-}
-
-.confetti {
-    position: fixed;
-    width: 10px;
-    height: 10px;
-    pointer-events: none;
-    z-index: 1000;
-    opacity: 0.8;
-    animation: fall linear forwards;
-}
-
-@keyframes fall {
-    to {
-        transform: translateY(100vh) rotate(360deg);
-        opacity: 0;
-    }
-}
+button { margin-top:20px; padding:12px 25px; font-size:20px; border:none; border-radius:8px; background:#f39c12; color:white; cursor:pointer; }
+button:hover { background:#e67e22; }
+#result { margin-top:20px; font-size:20px; font-weight:bold; }
 </style>
 </head>
 <body>
+
 <h1>Колесо фортуны 🎡</h1>
-<div class="wheel-container">
-    <div class="wheel" id="wheel">
-        <div>Приз 1</div>
-        <div>Приз 2</div>
-        <div>Приз 3</div>
-        <div>Приз 4</div>
-        <div>Приз 5</div>
-        <div>Приз 6</div>
-        <div>Приз 7</div>
-        <div>Приз 8</div>
-    </div>
-    <div class="pointer" id="pointer"></div>
+<div id="container">
+  <div id="strip"></div>
+  <div class="pointer"></div>
 </div>
-<button onclick="spinWheel()">Крутить!</button>
+<button id="spinBtn">Открыть кейс!</button>
 <div id="result"></div>
 
-<audio id="win-sound">
-    <source src="https://www.soundjay.com/button/beep-07.wav" type="audio/wav">
-</audio>
-
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const wheel = document.getElementById('wheel');
-    const resultDiv = document.getElementById('result');
-    const winSound = document.getElementById('win-sound');
-    const prizes = ["Приз 1","Приз 2","Приз 3","Приз 4","Приз 5","Приз 6","Приз 7","Приз 8"];
-    let spinning = false;
-    let rotation = 0;
+const prizes = ["💎","🔫","🎯","🪙","🎁","⚡","🔥","💰"];
+const strip = document.getElementById('strip');
+const spinBtn = document.getElementById('spinBtn');
+const resultDiv = document.getElementById('result');
+let spinning = false;
+let position = 0;
 
-    function createConfetti() {
-        const confettiCount = 50;
-        for (let i=0; i<confettiCount; i++) {
-            const confetti = document.createElement('div');
-            confetti.classList.add('confetti');
-            confetti.style.left = Math.random()*window.innerWidth+'px';
-            confetti.style.backgroundColor = hsl(${Math.random()*360},100%,50%);
-            confetti.style.animationDuration = 2 + Math.random()*3 + 's';
-            document.body.appendChild(confetti);
-            setTimeout(()=>{ confetti.
-remove(); },5000);
+// создаем полоску с повторением призов
+function initStrip(){
+  strip.innerHTML='';
+  for(let i=0;i<500;i++){
+    const item=document.createElement('div');
+    item.classList.add('strip-item');
+    item.textContent = prizes[i%prizes.length];
+    strip.appendChild(item);
+  }
+}
+initStrip();
+
+// функция анимации прокрутки с ускорением и замедлением
+function spin(){
+  if(spinning) return;
+  spinning = true;
+  resultDiv.textContent='';
+
+  const baseDistance = Math.random()*500 + 2000; // базовое расстояние
+  const speedMultiplier = 10; // ускоряем начальное вращение в 10 раз
+  const totalDistance = baseDistance * speedMultiplier; 
+  const duration = 6500 + Math.random()*3500; // 6.5–10 секунд
+  const startTime = performance.now();
+
+  function animate(time){
+    const elapsed = time-startTime;
+    const t = Math.min(elapsed/duration,1);
+    // ease-out cubic для замедления
+    const ease = 1 - Math.pow(1-t,3);
+    position = ease * totalDistance;
+    strip.style.left = -position + 'px';
+
+    if(t<1){
+      requestAnimationFrame(animate);
+    } else {
+      // определяем приз по центру
+      const items = document.querySelectorAll('.strip-item');
+      const containerCenter = document.getElementById('container').offsetWidth/2;
+      let winner='';
+      for(let item of items){
+        const rect = item.getBoundingClientRect();
+        const containerRect = document.getElementById('container').getBoundingClientRect();
+        if(rect.left < containerRect.left + containerCenter && rect.right > containerRect.left + containerCenter){
+          winner = item.textContent;
+          break;
         }
+      }
+      resultDiv.textContent=`🎉 Вы выиграли: ${winner} 🎉`;
+      spinning=false;
     }
+  }
+  requestAnimationFrame(animate);
+}
 
-    window.spinWheel = function() {
-        if(spinning) return;
-        spinning = true;
-        resultDiv.textContent = "";
-
-        const prizeIndex = Math.floor(Math.random()*prizes.length);
-        const degreesPerPrize = 360 / prizes.length;
-        const spins = 5;
-        const randomOffset = Math.random()*degreesPerPrize;
-        const targetRotation = rotation + spins*360 + prizeIndex*degreesPerPrize + randomOffset;
-        const duration = 5000; // ms
-        const startTime = performance.now();
-
-        function animate(time) {
-            const elapsed = time - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            // ease out cubic
-            const ease = 1 - Math.pow(1 - progress, 3);
-            const currentRotation = rotation + (targetRotation - rotation)*ease;
-            wheel.style.transform = rotate(${currentRotation}deg);
-
-            if(progress < 1) {
-                requestAnimationFrame(animate);
-            } else {
-                rotation = targetRotation % 360;
-                resultDiv.textContent = 🎉 Поздравляем! Вы выиграли: ${prizes[prizeIndex]} 🎉;
-                winSound.play();
-                createConfetti();
-                spinning = false;
-            }
-        }
-
-        requestAnimationFrame(animate);
-    }
-});
+spinBtn.addEventListener('click', spin);
 </script>
+
 </body>
 </html>
